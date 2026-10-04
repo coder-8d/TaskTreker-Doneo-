@@ -80,6 +80,21 @@ export default function AiPage() {
         <p className="plans__status plans__status--warn">{t('ai.offlineBanner')}</p>
       )}
 
+      {providers.length > 0 && !providers.some((provider) => provider.ready) && (
+        <section className="panel panel--warn">
+          <h3 className="panel__title">{t('ai.noKeyTitle')}</h3>
+          <p className="panel__text">{t('ai.noKeyText')}</p>
+          <pre className="ai__code">
+{`# создай файл .env рядом с package.json и вставь ключ:
+OPENAI_API_KEY=sk-...        # ChatGPT
+XAI_API_KEY=xai-...          # Grok
+GEMINI_API_KEY=AIza...       # Gemini
+
+# затем перезапусти сервер: npm run dev:all`}
+          </pre>
+        </section>
+      )}
+
       <section className="panel">
         <h3 className="panel__title">{t('ai.providersTitle')}</h3>
         <div className="ai__providers">

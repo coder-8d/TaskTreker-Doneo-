@@ -2,6 +2,8 @@
 // Запуск: node server/index.js  (порт по умолчанию 4000)
 import express from 'express'
 import { randomUUID } from 'node:crypto'
+// Первым импортом читаем .env — чтобы ключи провайдеров были видны ниже.
+import './env.js'
 import { getDb, save } from './store.js'
 import { createToken, hashPassword, verifyPassword } from './auth.js'
 import { guestName, reminderText, seedTexts, testText } from './i18n.js'

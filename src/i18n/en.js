@@ -284,6 +284,8 @@ export default {
       two: 'What if too much work piled up?',
       three: 'How do I remember what matters?',
     },
+    noKeyTitle: 'No API key set',
+    noKeyText: 'Doneo answers with offline tips right now. To get real answers from the model, add a key on the server.',
     answerTitle: 'Advice',
     offlineTitle: 'Offline tips',
     offlineText: 'No connection to the provider or no API key — here are tips that work without internet.',

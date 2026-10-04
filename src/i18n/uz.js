@@ -284,6 +284,8 @@ export default {
       two: 'Ishlar ko‘payib ketganda nima qilaman?',
       three: 'Muhim narsani qanday eslab qolaman?',
     },
+    noKeyTitle: 'API kaliti belgilanmagan',
+    noKeyText: 'Hozir Doneo oflayn maslahat beradi. Modeldan haqiqiy javob olish uchun serverga kalit qo‘shing.',
     answerTitle: 'Maslahat',
     offlineTitle: 'Oflayn maslahatlar',
     offlineText: 'Provayder bilan aloqa yo‘q yoki API kaliti yo‘q — internet sizmasini ko‘rsatamiz.',
