@@ -5,6 +5,15 @@ import { randomUUID } from 'node:crypto'
 import { getDb, save } from './store.js'
 import { createToken, hashPassword, verifyPassword } from './auth.js'
 import { guestName, reminderText, seedTexts, testText } from './i18n.js'
+import { planCatalog } from './plans.js'
+import {
+  adIntervalMs,
+  cancelSubscription,
+  getSubscription,
+  isValidSelection,
+  startSubscription,
+} from './billing.js'
+import { aiProviders, askAdvice } from './ai.js'
 import {
   maskPhone,
   normalizePhone,
@@ -434,6 +443,56 @@ function startReminderScheduler() {
     }`,
   )
 }
+
+// ---------- Подписки ----------
+// Каталог тарифов публичный: страницу цен видно и без входа.
+app.get('/api/billing/plans', (req, res) => {
+  res.json({ plans: planCatalog(), intervals: { free: 5, plus: 10, pro: 0, ultima: 0 } })
+})
+
+app.get('/api/billing/subscription', requireAuth, (req, res) => {
+  const subscription = getSubscription(req.user.id)
+  res.json({ ...subscription, adIntervalMs: adIntervalMs(subscription) })
+})
+
+app.post('/api/billing/checkout', requireAuth, (req, res) => {
+  const { tierId, periodId } = req.body || {}
+  if (!isValidSelection(tierId, periodId)) {
+    return res.status(400).json({ error: 'Неизвестный тариф или период.', code: 'plan_invalid' })
+  }
+
+  // Реальной оплаты нет: подписка активируется сразу и помечается demo.
+  const subscription = startSubscription(req.user.id, { tierId, periodId })
+  res.json({ ...subscription, adIntervalMs: adIntervalMs(subscription) })
+})
+
+app.post('/api/billing/cancel', requireAuth, (req, res) => {
+  const subscription = cancelSubscription(req.user.id)
+  res.json({ ...subscription, adIntervalMs: adIntervalMs(subscription) })
+})
+
+// ---------- AI-советник ----------
+app.get('/api/ai/providers', requireAuth, (req, res) => {
+  res.json({ providers: aiProviders() })
+})
+
+app.post('/api/ai/advice', requireAuth, async (req, res) => {
+  // AI-функции входят в тариф Ultima.
+  const subscription = getSubscription(req.user.id)
+  if (subscription.tier !== 'ultima') {
+    return res.status(403).json({ error: 'Нужен тариф Ultima.', code: 'upgrade_required' })
+  }
+
+  const { question, providerId } = req.body || {}
+  const result = await askAdvice({
+    question,
+    lang: req.user.lang || 'ru',
+    providerId,
+  })
+
+  // Ответ всегда полезный: при проблемах с сетью приходят офлайн-советы.
+  res.json(result)
+})
 
 app.use((req, res) => res.status(404).json({ error: 'Не найдено', code: 'not_found' }))
 

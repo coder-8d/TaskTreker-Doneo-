@@ -3,6 +3,7 @@ import ExportButtons from '../components/ExportButtons.jsx'
 import SmsPanel from '../components/SmsPanel.jsx'
 import { useI18n } from '../i18n/index.jsx'
 import { useTheme } from '../hooks/useTheme.js'
+import { useSubscription } from '../context/SubscriptionContext.jsx'
 import { downloadCSV } from '../lib/csv.js'
 import { downloadJSON } from '../lib/json.js'
 
@@ -15,6 +16,7 @@ const THEMES = [
 export default function SettingsPage({ user, mode, tasks, stats, clearCompleted, logout }) {
   const { t, lang, setLang, langs, locale } = useI18n()
   const { theme, toggleTheme } = useTheme()
+  const { subscription, tier } = useSubscription()
 
   const isServer = mode === 'server'
 
@@ -37,6 +39,34 @@ export default function SettingsPage({ user, mode, tasks, stats, clearCompleted,
         title={t('pages.settings.title')}
         subtitle={t('pages.settings.subtitle')}
       />
+
+      <section className="panel">
+        <h3 className="panel__title">{t('plans.myPlan')}</h3>
+        <div className="setting">
+          <div className="setting__text">
+            <span className="setting__label">
+              {tier === 'free'
+                ? t('plans.freeName')
+                : `Doneo ${t(`plans.tiers.${tier}`)}`}
+              {subscription.status === 'trial' && (
+                <span className="plans__pill plans__pill--trial">
+                  {t('plans.statusTrial')}
+                </span>
+              )}
+            </span>
+            <span className="setting__hint">
+              {tier === 'free'
+                ? t('plans.adFreeHint')
+                : subscription.adIntervalMs > 0
+                  ? t('plans.adPlusHint', { minutes: subscription.adIntervalMs / 60000 })
+                  : t('plans.adNoneHint')}
+            </span>
+          </div>
+          <a className="btn btn--primary btn--sm" href="#/pricing">
+            {tier === 'free' ? t('plans.choosePlan') : t('plans.changePlan')}
+          </a>
+        </div>
+      </section>
 
       <section className="panel">
         <h3 className="panel__title">{t('pages.settings.appearance')}</h3>

@@ -2,12 +2,17 @@ import { useAuth } from './context/AuthContext.jsx'
 import { useTasks } from './hooks/useTasks.js'
 import { useI18n } from './i18n/index.jsx'
 import { useRouter } from './router/index.jsx'
+import { useOnline } from './hooks/useOnline.js'
 import Header from './components/Header.jsx'
 import Splash from './components/Splash.jsx'
 import AuthScreen from './components/AuthScreen.jsx'
+import AdSlot from './components/AdSlot.jsx'
+import OfflineScreen from './components/OfflineScreen.jsx'
 import TasksPage from './pages/TasksPage.jsx'
 import StatsPage from './pages/StatsPage.jsx'
 import SettingsPage from './pages/SettingsPage.jsx'
+import PricingPage from './pages/PricingPage.jsx'
+import AiPage from './pages/AiPage.jsx'
 import HelpPage from './pages/HelpPage.jsx'
 
 // Оболочка приложения: шапка с навигацией, активная страница и подвал.
@@ -16,6 +21,7 @@ function Tracker() {
   const { user, mode, logout } = useAuth()
   const { route } = useRouter()
   const { t, lang, langs } = useI18n()
+  const online = useOnline()
   const {
     tasks,
     stats,
@@ -46,6 +52,10 @@ function Tracker() {
           )}
 
           {route === 'stats' && <StatsPage tasks={tasks} stats={stats} />}
+
+          {route === 'pricing' && <PricingPage />}
+
+          {route === 'ai' && <AiPage />}
 
           {route === 'settings' && (
             <SettingsPage
@@ -89,6 +99,10 @@ function Tracker() {
             {(langs.find((item) => item.code === lang) || {}).label || lang}
           </span>
         </footer>
+
+        <AdSlot />
+
+        <OfflineScreen online={online} />
       </div>
     </div>
   )

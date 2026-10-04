@@ -1,4 +1,5 @@
 import { useAuth } from '../context/AuthContext.jsx'
+import { useSubscription } from '../context/SubscriptionContext.jsx'
 import { useTheme } from '../hooks/useTheme.js'
 import { useI18n } from '../i18n/index.jsx'
 import { NavLink } from '../router/index.jsx'
@@ -8,9 +9,13 @@ import LanguageSwitcher from './LanguageSwitcher.jsx'
 const NAV_ITEMS = [
   { to: 'tasks', icon: '✓', labelKey: 'nav.tasks' },
   { to: 'stats', icon: '▦', labelKey: 'nav.stats' },
+  { to: 'pricing', icon: '💎', labelKey: 'nav.pricing' },
+  { to: 'ai', icon: '✨', labelKey: 'nav.ai' },
   { to: 'settings', icon: '⚙', labelKey: 'nav.settings' },
   { to: 'help', icon: '?', labelKey: 'nav.help' },
 ]
+
+const TIER_ICONS = { plus: '💎', pro: '🚀', ultima: '👑' }
 
 function initials(name) {
   const parts = String(name || '').trim().split(/\s+/).filter(Boolean)
@@ -23,6 +28,7 @@ export default function Header({ taskCount = 0 }) {
   const { user, mode, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { t } = useI18n()
+  const { tier, subscription } = useSubscription()
 
   const isServer = mode === 'server'
 
@@ -58,6 +64,18 @@ export default function Header({ taskCount = 0 }) {
         </span>
 
         <LanguageSwitcher />
+
+        {tier !== 'free' && (
+          <a
+            className={`plan-pill plan-pill--${tier}`}
+            href="#/pricing"
+            title={t('plans.myPlan')}
+          >
+            <span aria-hidden="true">{TIER_ICONS[tier]}</span>
+            {t(`plans.tiers.${tier}`)}
+            {subscription.status === 'trial' && <span className="plan-pill__flag">🎁</span>}
+          </a>
+        )}
 
         <button
           className="icon-btn"
