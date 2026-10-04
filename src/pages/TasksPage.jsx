@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import ClockCard from '../components/ClockCard.jsx'
 import PageHead from '../components/PageHead.jsx'
 import ExportButtons from '../components/ExportButtons.jsx'
 import StatsBar from '../components/StatsBar.jsx'
@@ -78,6 +79,8 @@ export default function TasksPage({
 
   return (
     <div className="page">
+      <ClockCard />
+
       <PageHead
         title={t('pages.tasks.title')}
         subtitle={t('pages.tasks.subtitle')}

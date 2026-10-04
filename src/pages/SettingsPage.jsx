@@ -7,15 +7,16 @@ import { useSubscription } from '../context/SubscriptionContext.jsx'
 import { downloadCSV } from '../lib/csv.js'
 import { downloadJSON } from '../lib/json.js'
 
-const THEMES = [
-  { value: 'dark', icon: '☾', labelKey: 'pages.settings.themeDark' },
+const THEME_MODES = [
   { value: 'light', icon: '☀', labelKey: 'pages.settings.themeLight' },
+  { value: 'dark', icon: '☾', labelKey: 'pages.settings.themeDark' },
+  { value: 'auto', icon: '◐', labelKey: 'pages.settings.themeAuto' },
 ]
 
 // Страница «Настройки»: тема, язык, хранение данных, аккаунт и экспорт.
 export default function SettingsPage({ user, mode, tasks, stats, clearCompleted, logout }) {
   const { t, lang, setLang, langs, locale } = useI18n()
-  const { theme, toggleTheme } = useTheme()
+  const { theme, mode: themeMode, setMode: setThemeMode } = useTheme()
   const { subscription, tier } = useSubscription()
 
   const isServer = mode === 'server'
@@ -71,23 +72,29 @@ export default function SettingsPage({ user, mode, tasks, stats, clearCompleted,
       <section className="panel">
         <h3 className="panel__title">{t('pages.settings.appearance')}</h3>
 
-        <div className="setting">
+        <div className="setting setting--stack">
           <div className="setting__text">
             <span className="setting__label">{t('pages.settings.theme')}</span>
+            <span className="setting__hint">
+              {themeMode === 'auto'
+                ? t('pages.settings.themeAutoHint')
+                : t('pages.settings.themeManualHint')}
+            </span>
           </div>
           <div className="segmented" role="group" aria-label={t('pages.settings.theme')}>
-            {THEMES.map((item) => (
+            {THEME_MODES.map((item) => (
               <button
                 key={item.value}
                 type="button"
-                className={`segmented__btn ${theme === item.value ? 'is-active' : ''}`}
-                onClick={() => theme !== item.value && toggleTheme()}
-                aria-pressed={theme === item.value}
+                className={`segmented__btn ${themeMode === item.value ? 'is-active' : ''}`}
+                onClick={() => setThemeMode(item.value)}
+                aria-pressed={themeMode === item.value}
               >
                 <span aria-hidden="true">{item.icon}</span> {t(item.labelKey)}
               </button>
             ))}
           </div>
+          <span className="setting__current">{t(`pages.settings.theme${theme === 'dark' ? 'Dark' : 'Light'}`)}</span>
         </div>
 
         <div className="setting setting--stack">

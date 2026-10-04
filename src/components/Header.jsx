@@ -26,11 +26,19 @@ function initials(name) {
 
 export default function Header({ taskCount = 0 }) {
   const { user, mode, logout } = useAuth()
-  const { theme, toggleTheme } = useTheme()
+  const { theme, mode: themeMode, toggleTheme } = useTheme()
   const { t } = useI18n()
   const { tier, subscription } = useSubscription()
 
   const isServer = mode === 'server'
+  // Кнопка темы циклит Light → Dark → Auto.
+  const themeIcon = themeMode === 'auto' ? '◐' : theme === 'dark' ? '☾' : '☀'
+  const themeLabel =
+    themeMode === 'auto'
+      ? t('pages.settings.themeAuto')
+      : theme === 'dark'
+        ? t('pages.settings.themeDark')
+        : t('pages.settings.themeLight')
 
   return (
     <header className="header">
@@ -81,10 +89,10 @@ export default function Header({ taskCount = 0 }) {
           className="icon-btn"
           type="button"
           onClick={toggleTheme}
-          title={theme === 'dark' ? t('header.themeToLight') : t('header.themeToDark')}
-          aria-label={t('header.themeToggle')}
+          title={`${t('header.themeToggle')}: ${themeLabel}`}
+          aria-label={`${t('header.themeToggle')}: ${themeLabel}`}
         >
-          {theme === 'dark' ? '☀' : '☾'}
+          {themeIcon}
         </button>
 
         <div className="user">
