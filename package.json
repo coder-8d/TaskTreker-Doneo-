@@ -1,0 +1,25 @@
+{
+  "name": "doneo",
+  "private": true,
+  "version": "1.2.0",
+  "type": "module",
+  "description": "Doneo — трекер задач на React + Vite: серверная авторизация (Express), drag-and-drop, тёмная/светлая тема, три языка (uz/ru/en), экспорт в CSV и JSON",
+  "scripts": {
+    "dev": "vite",
+    "dev:server": "node server/index.js",
+    "dev:all": "concurrently -n web,api -c cyan,magenta \"vite\" \"node server/index.js\"",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "vite": "^5.4.11"
+  }
+}
