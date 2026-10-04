@@ -4,13 +4,25 @@ import express from 'express'
 import { randomUUID } from 'node:crypto'
 import { getDb, save } from './store.js'
 import { createToken, hashPassword, verifyPassword } from './auth.js'
-import { guestName, seedTexts } from './i18n.js'
+import { guestName, reminderText, seedTexts, testText } from './i18n.js'
+import {
+  maskPhone,
+  normalizePhone,
+  sendSms,
+  smsConfigured,
+  smsProvider,
+  smsProviderLabel,
+} from './sms.js'
 
 const PORT = process.env.PORT || 4000
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const STATUSES = ['todo', 'progress', 'done']
 const PRIORITIES = ['low', 'medium', 'high']
 const PATCH_FIELDS = ['title', 'description', 'status', 'priority', 'dueDate']
+
+// Варианты «напомнить за …» (в минутах).
+const REMIND_OPTIONS = [10, 30, 60, 180, 1440, 10080]
+const SMS_CHECK_INTERVAL = 60 * 1000
 
 // Дедлайн принимает и дату, и дату со временем: 'YYYY-MM-DD' или 'YYYY-MM-DDTHH:mm'.
 // Секунды на входе допускаются, но отбрасываются.
@@ -20,6 +32,40 @@ function normalizeDue(value) {
   const match = DUE_RE.exec(String(value ?? '').trim())
   if (!match) return ''
   return match[2] ? `${match[1]}T${match[2]}` : match[1]
+}
+
+// Дедлайн в миллисекундах. Без времени считаем конец дня.
+function dueTimestamp(value) {
+  const normalized = normalizeDue(value)
+  if (!normalized) return 0
+  const stamp = normalized.length > 10 ? `${normalized}:00` : `${normalized}T23:59:59`
+  const parsed = new Date(stamp).getTime()
+  return Number.isNaN(parsed) ? 0 : parsed
+}
+
+// --- Настройки SMS для пользователя ---
+const DEFAULT_SMS = { phone: '', enabled: false, remindMinutes: 60, verifiedAt: 0 }
+
+function smsSettings(userId) {
+  const db = getDb()
+  if (!db.settings) db.settings = {}
+  if (!db.settings[userId]) db.settings[userId] = { ...DEFAULT_SMS }
+  return db.settings[userId]
+}
+
+function publicSmsSettings(userId) {
+  const settings = smsSettings(userId)
+  return {
+    phone: settings.phone,
+    maskedPhone: maskPhone(settings.phone),
+    enabled: Boolean(settings.enabled),
+    remindMinutes: settings.remindMinutes,
+    verified: Boolean(settings.verifiedAt),
+    provider: smsProvider(),
+    providerLabel: smsProviderLabel(),
+    configured: smsConfigured(),
+    remindOptions: REMIND_OPTIONS,
+  }
 }
 
 const app = express()
@@ -137,6 +183,8 @@ app.post('/api/auth/register', (req, res) => {
     email,
     salt,
     passwordHash: hash,
+    // Язык нужен для текста SMS-напоминаний.
+    lang,
     createdAt: Date.now(),
   }
   db.users.push(user)
@@ -283,8 +331,113 @@ app.delete('/api/tasks/:id', requireAuth, (req, res) => {
   res.json({ ok: true })
 })
 
+// ---------- SMS-напоминания ----------
+app.get('/api/sms/settings', requireAuth, (req, res) => {
+  res.json(publicSmsSettings(req.user.id))
+})
+
+app.put('/api/sms/settings', requireAuth, (req, res) => {
+  const settings = smsSettings(req.user.id)
+  const { phone, enabled, remindMinutes } = req.body || {}
+
+  if (phone !== undefined) {
+    const clean = normalizePhone(phone)
+    if (phone && !clean) {
+      return res
+        .status(400)
+        .json({ error: 'Некорректный номер телефона.', code: 'phone_invalid' })
+    }
+    // Новый номер нужно подтвердить тестовым SMS.
+    if (clean && clean !== settings.phone) settings.verifiedAt = 0
+    settings.phone = clean
+  }
+
+  if (enabled !== undefined) settings.enabled = Boolean(enabled)
+
+  if (remindMinutes !== undefined) {
+    const minutes = Number(remindMinutes)
+    settings.remindMinutes = REMIND_OPTIONS.includes(minutes)
+      ? minutes
+      : DEFAULT_SMS.remindMinutes
+  }
+
+  save()
+  res.json(publicSmsSettings(req.user.id))
+})
+
+app.post('/api/sms/test', requireAuth, async (req, res) => {
+  const settings = smsSettings(req.user.id)
+  if (!settings.phone) {
+    return res
+      .status(400)
+      .json({ error: 'Сначала укажите номер телефона.', code: 'phone_missing' })
+  }
+
+  const result = await sendSms(settings.phone, testText(req.user.lang))
+  if (!result.ok) {
+    return res.status(502).json({
+      error: 'Не удалось отправить SMS.',
+      code: result.reason === 'not_configured' ? 'sms_not_configured' : 'sms_failed',
+      detail: result.detail || result.reason,
+    })
+  }
+
+  settings.verifiedAt = Date.now()
+  save()
+  res.json({ ok: true, mocked: Boolean(result.mocked), provider: result.provider })
+})
+
+// Раз в минуту ищем задачи, у которых скоро дедлайн, и шлём одно SMS.
+async function sendDueReminders() {
+  const db = getDb()
+  const now = Date.now()
+  let changed = false
+
+  for (const user of db.users) {
+    if (user.guest) continue
+    const settings = smsSettings(user.id)
+    if (!settings.enabled || !settings.phone) continue
+
+    const list = Array.isArray(db.tasks[user.id]) ? db.tasks[user.id] : []
+    for (const task of list) {
+      if (task.status === 'done' || !task.dueDate || task.smsSentAt) continue
+      const due = dueTimestamp(task.dueDate)
+      if (!due) continue
+
+      // Время ещё не наступило и окно предупреждения не открылось.
+      if (due > now + settings.remindMinutes * 60000) continue
+
+      const result = await sendSms(settings.phone, reminderText(user.lang, task, due))
+      if (!result.ok) {
+        console.warn(`[sms] не отправлено для ${settings.phone}:`, result.reason, result.detail || '')
+        continue
+      }
+      task.smsSentAt = now
+      changed = true
+      console.log(`[sms] отправлено: «${task.title}» → ${maskPhone(settings.phone)}`)
+    }
+  }
+
+  if (changed) save()
+}
+
+function startReminderScheduler() {
+  setTimeout(() => {
+    sendDueReminders().catch((error) => console.error('[sms] ошибка проверки:', error.message))
+  }, 5000)
+  setInterval(() => {
+    sendDueReminders().catch((error) => console.error('[sms] ошибка проверки:', error.message))
+  }, SMS_CHECK_INTERVAL)
+  console.log(
+    `✉  SMS-напоминания: провайдер «${smsProviderLabel()}»${
+      smsConfigured() ? '' : ' (не настроен — отправка отключена)'
+    }`,
+  )
+}
+
 app.use((req, res) => res.status(404).json({ error: 'Не найдено', code: 'not_found' }))
 
 app.listen(PORT, () => {
   console.log(`✔ Doneo API запущен: http://localhost:${PORT}`)
+  startReminderScheduler()
 })

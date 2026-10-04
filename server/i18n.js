@@ -81,6 +81,37 @@ export const GUEST_NAMES = {
   uz: 'Mehmon',
 }
 
+const LOCALES = { ru: 'ru-RU', en: 'en-US', uz: 'uz-UZ' }
+
+function formatWhen(lang, stamp) {
+  const locale = LOCALES[lang] || LOCALES.ru
+  try {
+    return new Date(stamp).toLocaleString(locale, {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return new Date(stamp).toISOString().slice(0, 16).replace('T', ' ')
+  }
+}
+
+// Текст SMS-напоминания — на языке, выбранном при регистрации.
+export function reminderText(lang, task, dueStamp) {
+  const title = String((task && task.title) || '').slice(0, 80)
+  const when = formatWhen(lang, dueStamp)
+  if (lang === 'en') return `Doneo: task "${title}" is due ${when}.`
+  if (lang === 'uz') return `Doneo: "${title}" vazifasi muddati ${when}.`
+  return `Doneo: скоро дедлайн задачи «${title}» — ${when}.`
+}
+
+export function testText(lang) {
+  if (lang === 'en') return 'Doneo: test SMS. Notifications are working.'
+  if (lang === 'uz') return 'Doneo: test SMS. Bildirishnomalar ishlayapti.'
+  return 'Doneo: тестовое SMS. Уведомления работают.'
+}
+
 export function seedTexts(lang) {
   return SEEDS[lang] || SEEDS.ru
 }

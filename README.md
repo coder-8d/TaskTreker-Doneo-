@@ -89,7 +89,8 @@ task-tracker/
 │   ├── index.js            # Express: auth + задачи + коды ошибок
 │   ├── auth.js             # scrypt-хэши и Bearer-токены
 │   ├── store.js            # JSON-база с атомарной записью
-│   ├── i18n.js             # локализованные примеры-задачи и имя гостя
+│   ├── i18n.js             # локализованные примеры-задачи, тексты SMS, имя гостя
+│   ├── sms.js              # SMS-провайдеры: console / Twilio / SMS.ru
 │   └── data/db.json        # база (в .gitignore)
 └── src/
     ├── main.jsx            # провайдеры: I18n → Auth → Router
@@ -97,7 +98,7 @@ task-tracker/
     ├── i18n/               # uz / ru / en + провайдер t()
     ├── router/             # хэш-роутер: Link, NavLink, useRouter
     ├── pages/              # TasksPage, StatsPage, SettingsPage, HelpPage
-    ├── components/         # Header, TaskList, TaskItem, TaskForm, Modal, …
+    ├── components/         # Header, TaskList, TaskItem, SmsPanel, …
     ├── context/AuthContext # сессия, режим сервер/локально
     ├── hooks/              # useTasks, useTheme
     └── lib/                # api, auth, serverAuth, serverTasks, csv, json, tasks
@@ -119,6 +120,9 @@ task-tracker/
 | `DELETE`| `/api/tasks/:id`            | удалить задачу                               |
 | `POST`  | `/api/tasks/clear-completed`| удалить все выполненные                      |
 | `PUT`   | `/api/tasks/reorder`        | сохранить порядок (`{ ids: [...] }`)         |
+| `GET`   | `/api/sms/settings`         | настройки SMS пользователя                     |
+| `PUT`   | `/api/sms/settings`         | номер, включение, время предупреждения        |
+| `POST`  | `/api/sms/test`             | отправить тестовое SMS                          |
 
 Ошибки возвращаются как `{ "error": "…", "code": "…" }`; клиент переводит `code`
 на текущий язык.
@@ -131,10 +135,45 @@ task-tracker/
 локального пароля дополнительно проверяется со старой солью — поэтому ранее
 созданные локальные аккаунты продолжают работать.
 
+### SMS-напоминания
+
+- ✉️ Если до дедлайна задачи осталось мало времени, сервер отправляет **одно SMS**
+  на номер пользователя. Настройки — в разделе «SMS-уведомления» на странице
+  «Настройки»: номер, тумблер включения и «напомнить за 10 минут / 30 минут /
+  1 час / 3 часа / 1 день / 7 дней».
+- Сервер проверяет дедлайны раз в минуту и запоминает `smsSentAt`, поэтому
+  повторных SMS не бывает. Гостевые аккаунты не получают напоминаний.
+- Текст SMS приходит на языке, выбранном при регистрации (ru / en / uz).
+- Номер хранится только в базе на сервере (`server/data/db.json`) и в API
+  возвращается замаскированным: `*********4567`.
+- Кнопка «Отправить тестовое SMS» подтверждает номер.
+
+**Провайдеры** выбираются переменной окружения `SMS_PROVIDER` (см. `.env.example`):
+
+| Провайдер | Переменные | Примечание |
+| --- | --- | --- |
+| `console` | — | по умолчанию: SMS пишется в лог сервера, реально не отправляется |
+| `twilio` | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` | Twilio REST API, Basic-авторизация |
+| `smsru` | `SMSRU_API_ID` | SMS.ru, `status: 0` — успех |
+
+```bash
+# проверить отправку без реальных денег
+SMS_PROVIDER=console npm run dev:all
+tail -f /tmp/dev_all.log | grep '\[sms'
+
+# реальная отправка
+SMS_PROVIDER=smsru SMSRU_API_ID=ваш-id npm run dev:all
+```
+
+Ключи провайдера читаются **только на сервере** и никогда не попадают в браузер;
+файл `.env` добавлен в `.gitignore`. Если провайдер не настроен, панель в
+настройках покажет предупреждение, а отправка вернёт `sms_not_configured`.
+
 ## Переменные окружения
 
 - `PORT` — порт API (по умолчанию 4000).
 - `VITE_API_URL` — базовый URL API на клиенте (по умолчанию `/api`).
+- `SMS_PROVIDER`, `TWILIO_*`, `SMSRU_API_ID` — см. раздел про SMS выше.
 
 ## Заметки по безопасности
 

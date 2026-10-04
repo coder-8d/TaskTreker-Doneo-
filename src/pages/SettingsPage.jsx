@@ -1,5 +1,6 @@
 import PageHead from '../components/PageHead.jsx'
 import ExportButtons from '../components/ExportButtons.jsx'
+import SmsPanel from '../components/SmsPanel.jsx'
 import { useI18n } from '../i18n/index.jsx'
 import { useTheme } from '../hooks/useTheme.js'
 import { downloadCSV } from '../lib/csv.js'
@@ -114,6 +115,8 @@ export default function SettingsPage({ user, mode, tasks, stats, clearCompleted,
           />
         </div>
       </section>
+
+      <SmsPanel />
 
       <section className="panel">
         <h3 className="panel__title">{t('pages.settings.account')}</h3>

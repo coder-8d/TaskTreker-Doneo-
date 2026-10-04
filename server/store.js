@@ -8,7 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = join(__dirname, 'data')
 const DB_FILE = join(DATA_DIR, 'db.json')
 
-const EMPTY = { users: [], sessions: {}, tasks: {} }
+const EMPTY = { users: [], sessions: {}, tasks: {}, settings: {} }
 
 function load() {
   try {
@@ -19,6 +19,8 @@ function load() {
         users: parsed.users || [],
         sessions: parsed.sessions || {},
         tasks: parsed.tasks || {},
+        // Настройки SMS-напоминаний (номер, включение, время предупреждения).
+        settings: parsed.settings || {},
       }
     }
   } catch (error) {

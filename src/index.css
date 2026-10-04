@@ -1328,3 +1328,81 @@ select.field__input {
   background: rgba(255, 92, 114, 0.1);
 }
 
+
+/* =========================================================
+   SMS-напоминания
+   ========================================================= */
+.sms__note { color: var(--text-muted); font-size: 13.5px; }
+.sms__phone { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sms__input { min-width: 190px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.sms__select { min-width: 140px; }
+
+.sms__badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sms__badge.is-on {
+  color: var(--done);
+  border-color: rgba(53, 201, 138, 0.35);
+  background: rgba(53, 201, 138, 0.1);
+}
+
+.sms__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.sms__status {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 13.5px;
+}
+.sms__status--ok {
+  color: var(--done);
+  border-color: rgba(53, 201, 138, 0.35);
+  background: rgba(53, 201, 138, 0.1);
+}
+.sms__status--error {
+  color: var(--danger);
+  border-color: rgba(255, 92, 114, 0.4);
+  background: rgba(255, 92, 114, 0.08);
+}
+
+/* Переключатель «вкл/выкл» */
+.switch { position: relative; display: inline-flex; cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch__track {
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  transition: background var(--transition), border-color var(--transition);
+}
+.switch__track::after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 2px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform var(--transition), background var(--transition);
+}
+.switch input:checked + .switch__track {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.switch input:checked + .switch__track::after {
+  transform: translateX(20px);
+  background: #fff;
+}
+.switch input:disabled + .switch__track { opacity: 0.45; cursor: not-allowed; }
+.switch input:focus-visible + .switch__track { box-shadow: 0 0 0 3px var(--accent-soft); }
+
