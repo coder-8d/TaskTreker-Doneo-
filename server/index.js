@@ -9,7 +9,6 @@ import { createToken, hashPassword, verifyPassword } from './auth.js'
 import { guestName, reminderText, seedTexts, testText } from './i18n.js'
 import { planCatalog } from './plans.js'
 import {
-  adIntervalMs,
   cancelSubscription,
   getSubscription,
   isValidSelection,
@@ -449,12 +448,12 @@ function startReminderScheduler() {
 // ---------- Подписки ----------
 // Каталог тарифов публичный: страницу цен видно и без входа.
 app.get('/api/billing/plans', (req, res) => {
-  res.json({ plans: planCatalog(), intervals: { free: 5, plus: 10, pro: 0, ultima: 0 } })
+  res.json({ plans: planCatalog() })
 })
 
 app.get('/api/billing/subscription', requireAuth, (req, res) => {
   const subscription = getSubscription(req.user.id)
-  res.json({ ...subscription, adIntervalMs: adIntervalMs(subscription) })
+  res.json(subscription)
 })
 
 app.post('/api/billing/checkout', requireAuth, (req, res) => {
@@ -465,12 +464,12 @@ app.post('/api/billing/checkout', requireAuth, (req, res) => {
 
   // Реальной оплаты нет: подписка активируется сразу и помечается demo.
   const subscription = startSubscription(req.user.id, { tierId, periodId })
-  res.json({ ...subscription, adIntervalMs: adIntervalMs(subscription) })
+  res.json(subscription)
 })
 
 app.post('/api/billing/cancel', requireAuth, (req, res) => {
   const subscription = cancelSubscription(req.user.id)
-  res.json({ ...subscription, adIntervalMs: adIntervalMs(subscription) })
+  res.json(subscription)
 })
 
 // ---------- AI-советник ----------

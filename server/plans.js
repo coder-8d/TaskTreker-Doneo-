@@ -9,14 +9,6 @@ export const PERIODS = [
   { id: 'year', months: 12 },
 ]
 
-// Как часто показывается реклама (мс). Pro и Ultima — без рекламы.
-export const AD_INTERVALS = {
-  free: 5 * 60 * 1000,
-  plus: 10 * 60 * 1000,
-  pro: 0,
-  ultima: 0,
-}
-
 const TIERS = {
   plus: {
     id: 'plus',

@@ -14,15 +14,13 @@ const SubscriptionContext = createContext(null)
 const FREE = {
   tier: 'free',
   status: 'free',
-  adIntervalMs: 5 * 60 * 1000,
   trialEndsAt: 0,
   endsAt: 0,
   renewsAt: 0,
   demo: false,
 }
 
-// Тариф и интервал рекламы нужны шапке, рекламе, страницам цен и AI —
-// держим их в одном контексте.
+// Тариф нужен шапке, страницам цен и AI — держим его в одном контексте.
 export function SubscriptionProvider({ children }) {
   const { user, mode } = useAuth()
   const [subscription, setSubscription] = useState(FREE)
@@ -66,11 +64,10 @@ export function SubscriptionProvider({ children }) {
   }, [])
 
   const tier = subscription.tier || 'free'
-  const hasAds = Number(subscription.adIntervalMs) > 0
 
   const value = useMemo(
-    () => ({ subscription, tier, hasAds, loading, refresh, activate, cancel }),
-    [subscription, tier, hasAds, loading, refresh, activate, cancel],
+    () => ({ subscription, tier, loading, refresh, activate, cancel }),
+    [subscription, tier, loading, refresh, activate, cancel],
   )
 
   return (

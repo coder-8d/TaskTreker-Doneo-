@@ -4,7 +4,7 @@
 // подключение реального платёжного провайдера (Stripe и т.п.) делается
 // в createOrder(): сейчас он просто сразу подтверждает подписку.
 import { getDb, save } from './store.js'
-import { AD_INTERVALS, findTier, isValidPeriod, PERIODS } from './plans.js'
+import { findTier, isValidPeriod, PERIODS } from './plans.js'
 
 const DAY = 86400000
 
@@ -66,14 +66,6 @@ function freeSubscription() {
 export function getSubscription(userId) {
   const record = table()[userId]
   return record ? evaluate(record) : freeSubscription()
-}
-
-// Через сколько миллисекунд показывать следующую рекламу.
-export function adIntervalMs(subscription) {
-  const tier = subscription && subscription.tier
-  if (tier === 'pro' || tier === 'ultima') return AD_INTERVALS.pro
-  if (tier === 'plus') return AD_INTERVALS.plus
-  return AD_INTERVALS.free
 }
 
 // Создаёт подписку: сначала пробный период, потом оплаченный.

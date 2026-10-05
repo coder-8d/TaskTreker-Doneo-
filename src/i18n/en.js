@@ -229,9 +229,6 @@ export default {
     inheritedFrom: 'Everything in {tier} +',
     choosePlan: 'Choose a plan',
     changePlan: 'Change plan',
-    adFreeHint: 'Ads are shown every 5 minutes.',
-    adPlusHint: 'Ads are shown every {minutes} minutes.',
-    adNoneHint: 'Ads are turned off.',
     tiers: { free: 'Free', plus: 'Plus', pro: 'Pro', ultima: 'Ultima' },
     badges: {
       bestValue: 'Best value',
@@ -306,28 +303,6 @@ export default {
     retry: '🔄 Retry connection',
     checking: 'Checking…',
     fineprint: 'Doneo works without internet 💙',
-  },
-  ads: {
-    label: 'Advertisement',
-    nextIn: 'Next one in {minutes} min',
-    watch: 'Watch',
-    close: 'Close',
-    endingIn: 'Time left before you can close:',
-    canClose: 'Ad is required — now you can close it',
-    showNow: 'Show the ad now',
-    noAdsHint: 'Ads are turned off on your plan.',
-    creatives: {
-      alfaTitle: 'Open a business account',
-      alfaText: '15% cashback on taxi rides',
-      alfaNote: 'Advertisement · Alfa-Bank',
-      visaTitle: 'Visa Commercial (2026) — FIFA World Cup 2026™',
-      visaText: 'Feel the scale: everything is a tap in with Visa.',
-      worldCupTitle: 'FIFA World Cup 2026™',
-      worldCupText: 'Level up your game — everything in one tap.',
-      doneoTitle: 'Doneo without ads',
-      doneoText: 'Pro and Ultima turn ads off completely.',
-      cta: 'Learn more',
-    },
   },
   pages: {
     tasks: {

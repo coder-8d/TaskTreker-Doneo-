@@ -229,9 +229,6 @@ export default {
     inheritedFrom: '{tier}ning hammasi +',
     choosePlan: 'Tarif tanlash',
     changePlan: 'Tarifni o‘zgartirish',
-    adFreeHint: 'Reklama har 5 daqiqada ko‘rsatiladi.',
-    adPlusHint: 'Reklama har {minutes} daqiqada ko‘rsatiladi.',
-    adNoneHint: 'Reklama o‘chirilgan.',
     tiers: { free: 'Free', plus: 'Plus', pro: 'Pro', ultima: 'Ultima' },
     badges: {
       bestValue: 'Eng foydali',
@@ -306,28 +303,6 @@ export default {
     retry: '🔄 Уланишни қайтариш',
     checking: 'Текшириб…',
     fineprint: 'Doneo интернетсиз ҳам ишлайди 💙',
-  },
-  ads: {
-    label: 'Реклама',
-    nextIn: 'Кейингиси {minutes} дақиқадан кейин',
-    watch: 'Кўриш',
-    close: 'Yopish',
-    endingIn: 'Yopishgacha qolgan vaqt:',
-    canClose: 'Reklama majburiy — endi yopish mumkin',
-    showNow: 'Reklamani hozir ko‘rsatish',
-    noAdsHint: 'Tarifingizda reklama o‘chirilgan.',
-    creatives: {
-      alfaTitle: 'Biznes uchun hisob oching',
-      alfaText: 'Taksida 15 foiz keshbek',
-      alfaNote: 'Reklama · Alfa-Bank',
-      visaTitle: 'Visa Commercial (2026) — FIFA World Cup 2026™',
-      visaText: 'Масштабни ҳис қил: Visa bilan hammasi bir тегишда.',
-      worldCupTitle: 'FIFA World Cup 2026™',
-      worldCupText: 'O‘zingni yaxshilab bor — hammasi ilovada bir tekanish bilan.',
-      doneoTitle: 'Doneo reklamasiz',
-      doneoText: 'Pro va Ultima reklamani butunlay o‘chiradi.',
-      cta: 'Batafsil',
-    },
   },
   pages: {
     tasks: {

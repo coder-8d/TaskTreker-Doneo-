@@ -6,7 +6,6 @@ import { useOnline } from './hooks/useOnline.js'
 import Header from './components/Header.jsx'
 import Splash from './components/Splash.jsx'
 import AuthScreen from './components/AuthScreen.jsx'
-import AdSlot from './components/AdSlot.jsx'
 import OfflineScreen from './components/OfflineScreen.jsx'
 import TasksPage from './pages/TasksPage.jsx'
 import StatsPage from './pages/StatsPage.jsx'
@@ -99,8 +98,6 @@ function Tracker() {
             {(langs.find((item) => item.code === lang) || {}).label || lang}
           </span>
         </footer>
-
-        <AdSlot />
 
         <OfflineScreen online={online} />
       </div>

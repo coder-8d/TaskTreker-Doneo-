@@ -229,9 +229,6 @@ export default {
     inheritedFrom: 'Всё из {tier} +',
     choosePlan: 'Выбрать тариф',
     changePlan: 'Изменить тариф',
-    adFreeHint: 'Реклама показывается каждые 5 минут.',
-    adPlusHint: 'Реклама показывается каждые {minutes} минут.',
-    adNoneHint: 'Реклама отключена.',
     tiers: { free: 'Free', plus: 'Plus', pro: 'Pro', ultima: 'Ultima' },
     badges: {
       bestValue: 'Самый выгодный',
@@ -306,28 +303,6 @@ export default {
     retry: '🔄 Повторить подключение',
     checking: 'Проверяем…',
     fineprint: 'Doneo работает и без интернета 💙',
-  },
-  ads: {
-    label: 'Реклама',
-    nextIn: 'Следующая через {minutes} мин',
-    watch: 'Смотреть',
-    close: 'Закрыть',
-    endingIn: 'До возможности закрыть:',
-    canClose: 'Реклама обязательна — можно закрыть',
-    showNow: 'Показать рекламу сейчас',
-    noAdsHint: 'На вашем тарифе реклама отключена.',
-    creatives: {
-      alfaTitle: 'Откройте счёт для бизнеса',
-      alfaText: 'Кэшбэк 15 процентов на такси',
-      alfaNote: 'Реклама · Альфа-Банк',
-      visaTitle: 'Visa Commercial (2026) — FIFA World Cup 2026™',
-      visaText: 'Ощути масштаб: всё — одно касание с Visa.',
-      worldCupTitle: 'FIFA World Cup 2026™',
-      worldCupText: 'Level up your game — всё в приложении на одно касание.',
-      doneoTitle: 'Doneo без рекламы',
-      doneoText: 'Тарифы Pro и Ultima отключают рекламу полностью.',
-      cta: 'Подробнее',
-    },
   },
   pages: {
     tasks: {

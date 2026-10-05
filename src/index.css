@@ -1606,37 +1606,7 @@ select.field__input {
   color: var(--text-dim);
 }
 
-/* =========================================================
-   Реклама
-   ========================================================= */
-.ad {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 40;
-  width: min(360px, calc(100vw - 36px));
-  padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  animation: rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.ad__body { display: flex; flex-direction: column; gap: 10px; }
-.ad__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ad__brand { font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--text-dim); }
-.ad__timer { font-size: 11px; color: var(--text-muted); }
-.ad__title { font-size: 14px; font-weight: 700; }
-.ad__desc { color: var(--text-muted); font-size: 12.5px; margin-top: 3px; }
-.ad__video { aspect-ratio: 16 / 9; border-radius: var(--radius-sm); overflow: hidden; background: #000; }
-.ad__video iframe { width: 100%; height: 100%; border: 0; }
-.ad__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ad--visa { border-color: rgba(255, 92, 114, 0.4); }
-.ad--fifa { border-color: rgba(53, 201, 138, 0.35); }
-.ad--doneo { border-color: var(--accent); }
-
 @media (max-width: 640px) {
-  .ad { right: 12px; left: 12px; bottom: 12px; width: auto; }
   .plans__periods { align-self: stretch; justify-content: center; }
   .plans__period { flex: 1; justify-content: center; padding: 9px 10px; }
 }
@@ -1785,116 +1755,6 @@ select.field__input {
 }
 
 /* =========================================================
-   Полноэкранная реклама (interstitial)
-   ========================================================= */
-.fsad {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #05050a;
-  color: #fff;
-  animation: fade 200ms ease;
-}
-.fsad__bottom {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px 18px 18px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
-}
-.fsad__controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.fsad__progress {
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
-  overflow: hidden;
-}
-.fsad__progress-fill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #ff3b4e, #e61e4d);
-  transition: width 1s linear;
-}
-.fsad__close {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background var(--transition), transform var(--transition);
-  animation: fade 200ms ease;
-}
-.fsad__close:hover { background: rgba(255, 255, 255, 0.26); transform: scale(1.06); }
-
-.fsad__content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 26px;
-  padding: 40px 24px;
-  text-align: center;
-  max-width: 900px;
-  width: 100%;
-  animation: fsadIn 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.fsad__inner { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-.fsad__brand {
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.fsad__title { font-size: clamp(26px, 5vw, 46px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
-.fsad__text { color: rgba(255, 255, 255, 0.82); font-size: clamp(15px, 2.2vw, 22px); max-width: 640px; }
-.fsad__note { color: rgba(255, 255, 255, 0.5); font-size: 13px; }
-.fsad__counter { color: rgba(255, 255, 255, 0.55); font-size: 13px; font-variant-numeric: tabular-nums; }
-
-.fsad__blackout {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: #000;
-}
-.fsad__countdown {
-  font-size: 72px;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.9);
-}
-.fsad__countdown-label { color: rgba(255, 255, 255, 0.45); font-size: 13px; }
-
-/* Фирменный градиент креатива */
-.fsad--alfa { background: radial-gradient(120% 90% at 50% 0%, #e21a2d 0%, #8b0f1c 55%, #05050a 100%); }
-
-@keyframes fsadIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* =========================================================
    Плавная смена темы (Light / Dark / Auto) — 400 мс
    ========================================================= */
 body,
@@ -1917,8 +1777,7 @@ body,
 .nav,
 .lang,
 .sms__input,
-.sms__select,
-.fsad__content {
+.sms__select {
   transition: background-color 400ms ease, color 400ms ease,
     border-color 400ms ease, box-shadow 400ms ease;
 }

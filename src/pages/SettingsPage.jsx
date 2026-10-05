@@ -4,7 +4,6 @@ import SmsPanel from '../components/SmsPanel.jsx'
 import { useI18n } from '../i18n/index.jsx'
 import { useTheme } from '../hooks/useTheme.js'
 import { useSubscription } from '../context/SubscriptionContext.jsx'
-import { showAdNow } from '../lib/adBus.js'
 import { downloadCSV } from '../lib/csv.js'
 import { downloadJSON } from '../lib/json.js'
 
@@ -18,7 +17,7 @@ const THEME_MODES = [
 export default function SettingsPage({ user, mode, tasks, stats, clearCompleted, logout }) {
   const { t, lang, setLang, langs, locale } = useI18n()
   const { theme, mode: themeMode, setMode: setThemeMode } = useTheme()
-  const { subscription, tier, hasAds } = useSubscription()
+  const { subscription, tier } = useSubscription()
 
   const isServer = mode === 'server'
 
@@ -56,32 +55,24 @@ export default function SettingsPage({ user, mode, tasks, stats, clearCompleted,
                 </span>
               )}
             </span>
-            <span className="setting__hint">
-              {tier === 'free'
-                ? t('plans.adFreeHint')
-                : subscription.adIntervalMs > 0
-                  ? t('plans.adPlusHint', { minutes: subscription.adIntervalMs / 60000 })
-                  : t('plans.adNoneHint')}
-            </span>
+            {tier !== 'free' && (
+              <span className="setting__hint">
+                {subscription.status === 'trial'
+                  ? t('plans.trialLeft', {
+                      days: Math.max(0, Math.ceil((subscription.trialEndsAt - Date.now()) / 86400000)),
+                    })
+                  : t('plans.renewsAt', {
+                      date: new Date(subscription.renewsAt || subscription.endsAt).toLocaleDateString(locale),
+                    })}
+              </span>
+            )}
           </div>
           <div className="setting__actions">
             <a className="btn btn--primary btn--sm" href="#/pricing">
               {tier === 'free' ? t('plans.choosePlan') : t('plans.changePlan')}
             </a>
-            <button
-              className="btn btn--ghost btn--sm"
-              type="button"
-              onClick={showAdNow}
-              disabled={!hasAds}
-            >
-              {t('ads.showNow')}
-            </button>
           </div>
         </div>
-
-        {!hasAds && (
-          <p className="setting__hint">{t('ads.noAdsHint')}</p>
-        )}
       </section>
 
       <section className="panel">

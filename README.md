@@ -92,19 +92,19 @@ task-tracker/
 │   ├── i18n.js             # локализованные примеры-задачи, тексты SMS, имя гостя
 │   ├── sms.js              # SMS-провайдеры: console / Twilio / SMS.ru
 │   ├── plans.js            # каталог тарифов Plus / Pro / Ultima
-│   ├── billing.js          # подписка, пробный период, интервал рекламы
+│   ├── billing.js          # подписка и пробный период
 │   ├── ai.js               # AI: ChatGPT / Grok / Gemini + офлайн-советы
 │   └── data/db.json        # база (в .gitignore)
 └── src/
     ├── main.jsx            # провайдеры: I18n → Auth → Subscription → Router
-    ├── App.jsx             # оболочка: шапка + страница + реклама + офлайн
+    ├── App.jsx             # оболочка: шапка + страница + офлайн
     ├── i18n/               # uz / ru / en + провайдер t()
     ├── router/             # хэш-роутер: Link, NavLink, useRouter
     ├── pages/              # Tasks, Stats, Pricing, Ai, Settings, Help
-    ├── components/         # Header, TaskList, TaskItem, SmsPanel, AdSlot, …
+    ├── components/         # Header, TaskList, TaskItem, SmsPanel, …
     ├── context/            # AuthContext, SubscriptionContext
     ├── hooks/              # useTasks, useTheme, useOnline
-    └── lib/                # api, auth, billing, ai, ads, csv, json, tasks
+    └── lib/                # api, auth, billing, ai, csv, json, tasks
     ├── context/AuthContext # сессия, режим сервер/локально
     ├── hooks/              # useTasks, useTheme
     └── lib/                # api, auth, serverAuth, serverTasks, csv, json, tasks
@@ -130,7 +130,7 @@ task-tracker/
 | `PUT`   | `/api/sms/settings`         | номер, включение, время предупреждения        |
 | `POST`  | `/api/sms/test`             | отправить тестовое SMS                          |
 | `GET`   | `/api/billing/plans`        | каталог тарифов (без входа)                     |
-| `GET`   | `/api/billing/subscription`  | текущая подписка и интервал рекламы              |
+| `GET`   | `/api/billing/subscription`  | текущая подписка                                 |
 | `POST`  | `/api/billing/checkout`      | оформить подписку (`tierId`, `periodId`)         |
 | `POST`  | `/api/billing/cancel`        | отменить подписку в конце периода                |
 | `GET`   | `/api/ai/providers`          | список AI-провайдеров и наличие ключей           |
@@ -170,20 +170,6 @@ task-tracker/
 - ⚠️ **Реальной оплаты нет**: `POST /api/billing/checkout` активирует подписку сразу и
   помечает её `demo: true`. Для боевого режима замените эту функцию на платёжный
   провайдер (Stripe/Paddle) — остальная логика (триал → оплата → истечение) готова.
-
-### Реклама и тарифы
-
-| Тариф | Показ рекламы | Первый показ |
-| --- | --- | --- |
-| без подписки | раз в **5 минут** | только после 5 минут в приложении |
-| Plus | раз в **10 минут** | только после 10 минут |
-| Pro | нет | — |
-| Ultima | нет | — |
-
-- Таймер живёт на клиенте и перенастраивается при смене тарифа: переход на
-  Pro/Ultima **мгновенно** убирает рекламу.
-- Креативы лежат в `src/lib/ads.js` — заменяются на реальные без изменения кода.
-  Видео подгружается по клику (YouTube `nocookie`), баннеры работают офлайн.
 
 ### AI-помощник (тариф Ultima)
 
