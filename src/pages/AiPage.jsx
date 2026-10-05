@@ -1,45 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import PageHead from '../components/PageHead.jsx'
 import { useI18n } from '../i18n/index.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useOnline } from '../hooks/useOnline.js'
 import { useSubscription } from '../context/SubscriptionContext.jsx'
-import { askAi, getAiProviders } from '../lib/ai.js'
+import { askAi } from '../lib/ai.js'
 
 const STARTERS = ['ai.samples.one', 'ai.samples.two', 'ai.samples.three']
 
-// AI-советник (тариф Ultima). Источники только ChatGPT, Grok и Gemini;
-// без сети или без ключей показываем офлайн-советы, а не ошибку.
+// AI-советник (тариф Ultima). Источник выбирает сервер автоматически,
+// пользователю остаётся только кнопка «Отправить запрос». Без сети или
+// без ключа показываются офлайн-советы, а не ошибка.
 export default function AiPage() {
   const { t } = useI18n()
   const { mode } = useAuth()
   const { tier } = useSubscription()
   const online = useOnline()
 
-  const [providers, setProviders] = useState([])
-  const [providerId, setProviderId] = useState('')
   const [question, setQuestion] = useState('')
   const [result, setResult] = useState(null)
   const [busy, setBusy] = useState(false)
 
   const allowed = tier === 'ultima'
 
-  useEffect(() => {
-    if (!allowed || mode !== 'server') return undefined
-    let alive = true
-    getAiProviders()
-      .then((data) => {
-        if (!alive) return
-        const list = data.providers || []
-        setProviders(list)
-        const first = list.find((item) => item.ready)
-        if (first) setProviderId(first.id)
-      })
-      .catch(() => {})
-    return () => {
-      alive = false
-    }
-  }, [allowed, mode])
 
   const ask = async (text) => {
     const value = String(text ?? question).trim()
@@ -47,7 +30,7 @@ export default function AiPage() {
     setBusy(true)
     setResult(null)
     try {
-      const data = await askAi(value, providerId || undefined)
+      const data = await askAi(value)
       setResult(data)
     } catch (error) {
       setResult({ offline: true, tips: [], error: error.message })
@@ -79,43 +62,6 @@ export default function AiPage() {
       {!online && (
         <p className="plans__status plans__status--warn">{t('ai.offlineBanner')}</p>
       )}
-
-      {providers.length > 0 && !providers.some((provider) => provider.ready) && (
-        <section className="panel panel--warn">
-          <h3 className="panel__title">{t('ai.noKeyTitle')}</h3>
-          <p className="panel__text">{t('ai.noKeyText')}</p>
-          <pre className="ai__code">
-{`# создай файл .env рядом с package.json и вставь ключ:
-OPENAI_API_KEY=sk-...        # ChatGPT
-XAI_API_KEY=xai-...          # Grok
-GEMINI_API_KEY=AIza...       # Gemini
-
-# затем перезапусти сервер: npm run dev:all`}
-          </pre>
-        </section>
-      )}
-
-      <section className="panel">
-        <h3 className="panel__title">{t('ai.providersTitle')}</h3>
-        <div className="ai__providers">
-          {providers.map((provider) => (
-            <button
-              key={provider.id}
-              type="button"
-              className={`ai__provider ${providerId === provider.id ? 'is-active' : ''}`}
-              onClick={() => setProviderId(provider.id)}
-              aria-pressed={providerId === provider.id}
-            >
-              <span className="ai__provider-name">{provider.label}</span>
-              <span className="ai__provider-model">{provider.model}</span>
-              <span className={`ai__dot ${provider.ready ? 'is-ready' : ''}`} />
-              <span className="ai__provider-state">
-                {provider.ready ? t('ai.providerReady') : t('ai.providerNoKey')}
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
 
       <section className="panel">
         <h3 className="panel__title">{t('ai.askTitle')}</h3>
@@ -154,7 +100,7 @@ GEMINI_API_KEY=AIza...       # Gemini
             onClick={() => ask()}
             disabled={busy || !question.trim()}
           >
-            {busy ? t('ai.thinking') : t('ai.ask')}
+            {busy ? t('ai.thinking') : t('ai.sendRequest')}
           </button>
         </div>
       </section>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b0b0f" />
+    <meta name="theme-color" content="#101512" />
     <meta name="description" content="Doneo — трекер задач на React и Vite: серверная авторизация, drag-and-drop, три языка (UZ/RU/EN), тёмная и светлая тема, экспорт в CSV и JSON" />
     <title>Doneo — трекер задач</title>
     <script>
@@ -18,7 +18,7 @@
         var savedTheme = mode === 'auto' ? (h >= 6 && h < 21 ? 'light' : 'dark') : mode
         document.documentElement.dataset.theme = savedTheme
         var meta = document.querySelector('meta[name="theme-color"]')
-        if (meta) meta.setAttribute('content', savedTheme === 'light' ? '#eef0f6' : '#0b0b0f')
+        if (meta) meta.setAttribute('content', savedTheme === 'light' ? '#f4f6f4' : '#101512')
       } catch (e) {
         document.documentElement.dataset.theme = 'dark'
       }

@@ -24,6 +24,7 @@ export default function PricingPage() {
   // По умолчанию показываем год — он самый выгодный.
   const [period, setPeriod] = useState('year')
   const [busy, setBusy] = useState('')
+  const [cancelling, setCancelling] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
@@ -59,7 +60,7 @@ export default function PricingPage() {
           : t('plans.activated'),
       )
     } catch (e) {
-      setError(e.message || t('plans.activateError'))
+      setError(errorMessage(e) || t('plans.activateError'))
     } finally {
       setBusy('')
     }
@@ -67,12 +68,38 @@ export default function PricingPage() {
 
   const handleCancel = async () => {
     setError('')
-    try {
-      await cancel()
-      setNotice(t('plans.cancelled'))
-    } catch (e) {
-      setError(e.message || t('plans.cancelError'))
+    setNotice('')
+
+    // Отменять нечего — всё равно отвечаем, чтобы кнопка никогда не «умирала».
+    if (tier === 'free') {
+      setNotice(t('plans.noSubscriptionHint'))
+      return
     }
+
+    setCancelling(true)
+    try {
+      const updated = await cancel()
+      setNotice(
+        updated.cancelAtPeriodEnd
+          ? t('plans.cancelScheduled', { date: formatDate(updated.endsAt) })
+          : t('plans.cancelled'),
+      )
+    } catch (e) {
+      setError(errorMessage(e) || t('plans.cancelError'))
+    } finally {
+      setCancelling(false)
+    }
+  }
+
+  const locale = lang === 'uz' ? 'uz-UZ' : lang === 'en' ? 'en-US' : 'ru-RU'
+  const formatDate = (stamp) =>
+    stamp ? new Date(stamp).toLocaleDateString(locale) : '—'
+
+  // Сетевая ошибка браузера приходит по-английски — заменяем на понятный текст.
+  const errorMessage = (e) => {
+    const raw = e?.message || ''
+    if (!raw || /fetch|network|load failed/i.test(raw)) return t('plans.serverUnreachable')
+    return raw
   }
 
   return (
@@ -108,8 +135,13 @@ export default function PricingPage() {
               {subscription.demo ? ` · ${t('plans.demoMode')}` : ''}
             </span>
           </div>
-          <button className="btn btn--ghost btn--sm" type="button" onClick={handleCancel}>
-            {t('plans.cancel')}
+          <button
+            className="btn btn--ghost btn--sm"
+            type="button"
+            onClick={handleCancel}
+            disabled={cancelling}
+          >
+            {cancelling ? t('common.loading') : t('plans.cancel')}
           </button>
         </div>
       )}
@@ -128,6 +160,28 @@ export default function PricingPage() {
           </button>
         ))}
       </div>
+
+      {tier === 'free' && (
+        <div className="plans__current plans__current--off">
+          <div className="plans__current-text">
+            <span className="plans__current-name">{t('plans.freeName')}</span>
+            <span className="plans__current-hint">
+              {subscription.cancelAtPeriodEnd
+                ? t('plans.cancelScheduled', { date: formatDate(subscription.endsAt) })
+                : t('plans.noSubscriptionHint')}
+            </span>
+          </div>
+          <button
+            className="btn btn--ghost btn--sm"
+            type="button"
+            onClick={handleCancel}
+            disabled={cancelling}
+            title={t('plans.noSubscriptionHint')}
+          >
+            {cancelling ? t('common.loading') : t('plans.cancel')}
+          </button>
+        </div>
+      )}
 
       <div className="plans__grid">
         {plans.map((plan) => {

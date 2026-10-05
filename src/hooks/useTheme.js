@@ -40,7 +40,7 @@ function applyTheme(theme) {
   document.documentElement.dataset.theme = theme
   // Цвет адресной строки мобильных браузеров тоже подстраиваем под тему.
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', theme === 'light' ? '#eef0f6' : '#0b0b0f')
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#f4f6f4' : '#101512')
 }
 
 // Режим темы: 'light' | 'dark' | 'auto'.

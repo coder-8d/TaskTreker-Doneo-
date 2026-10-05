@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../i18n/index.jsx'
 import { useSubscription } from '../context/SubscriptionContext.jsx'
 import { ADS, AD_SECONDS, adState, nextAd } from '../lib/ads.js'
+import { onShowAd } from '../lib/adBus.js'
 
 // Полноэкранная реклама (interstitial), а не всплывающий баннер.
 //
@@ -40,6 +41,12 @@ export default function AdSlot() {
     return () => clearTimeout(startTimer.current)
   }, [hasAds, interval])
 
+  // Ручной показ из настроек: сразу, не дожидаясь таймера.
+  useEffect(() => onShowAd(() => {
+    setAd(nextAd(0))
+    setElapsed(0)
+  }), [])
+
   // Показывается объявление: тикаем каждую секунду.
   useEffect(() => {
     if (!ad) return undefined
@@ -63,28 +70,6 @@ export default function AdSlot() {
 
   return (
     <div className={`fsad fsad--${ad.tone}`} role="dialog" aria-modal="true" aria-label={t('ads.label')}>
-      <div
-        className="fsad__progress"
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={AD_SECONDS}
-        aria-valuenow={mandatoryLeft}
-      >
-        <span className="fsad__progress-fill" style={{ width: `${progress}%` }} />
-      </div>
-
-      {closable && (
-        <button
-          className="fsad__close"
-          type="button"
-          onClick={close}
-          aria-label={t('ads.close')}
-          title={t('ads.close')}
-        >
-          ✕
-        </button>
-      )}
-
       {inBlackout ? (
         // Ролик закончился раньше: чёрный экран, отсчёт продолжается.
         <div className="fsad__blackout">
@@ -99,13 +84,43 @@ export default function AdSlot() {
             <p className="fsad__text">{t(ad.textKey)}</p>
             {ad.noteKey && <p className="fsad__note">{t(ad.noteKey)}</p>}
           </div>
-          {!closable && (
+        </div>
+      )}
+
+      {/* Управление и прогресс — внизу, чтобы не закрывать креатив сверху */}
+      <div className="fsad__bottom">
+        <div
+          className="fsad__progress"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={AD_SECONDS}
+          aria-valuenow={mandatoryLeft}
+        >
+          <span className="fsad__progress-fill" style={{ width: `${progress}%` }} />
+        </div>
+
+        <div className="fsad__controls">
+          {!closable ? (
             <span className="fsad__counter">
               {t('ads.endingIn')} {mandatoryLeft}
             </span>
+          ) : (
+            <span className="fsad__counter">{t('ads.canClose')}</span>
+          )}
+
+          {closable && (
+            <button
+              className="fsad__close"
+              type="button"
+              onClick={close}
+              aria-label={t('ads.close')}
+              title={t('ads.close')}
+            >
+              ✕
+            </button>
           )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

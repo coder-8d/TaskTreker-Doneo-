@@ -216,6 +216,10 @@ export default {
     demoMode: 'demo rejimi, to‘lovsiz',
     cancel: 'Obunani bekor qilish',
     cancelled: 'Obuna bekor qilindi',
+    cancelScheduled: 'Obuna {date} da tugaydi — shu vaqtgacha barcha funksiyalar ishlaydi.',
+    noSubscriptionHint: 'Bekor qilish uchun faol obuna yo‘q.',
+    noSubscriptionTitle: 'Obunasiz',
+    serverUnreachable: 'Serverga ulanib bo‘lmadi — API’ni ishga tushirib, qayta urinib ko‘ring.',
     activateError: 'Tarifni faollashtirib bo‘lmadi.',
     cancelError: 'Obunani bekor qilib bo‘lmadi.',
     loadError: 'Tariflarni yuklab bo‘lmadi.',
@@ -278,6 +282,7 @@ export default {
     questionLabel: 'Savol yoki vazifa',
     questionPlaceholder: 'Masalan: kun oxirigacha uchta vazifani qanday uddalash mumkin?',
     ask: 'Maslahat olish',
+    sendRequest: 'So‘rov yuborish',
     thinking: 'O‘ylab…',
     samples: {
       one: 'Kunni qanday rejalashtirsam?',
@@ -308,6 +313,9 @@ export default {
     watch: 'Кўриш',
     close: 'Yopish',
     endingIn: 'Yopishgacha qolgan vaqt:',
+    canClose: 'Reklama majburiy — endi yopish mumkin',
+    showNow: 'Reklamani hozir ko‘rsatish',
+    noAdsHint: 'Tarifingizda reklama o‘chirilgan.',
     creatives: {
       alfaTitle: 'Biznes uchun hisob oching',
       alfaText: 'Taksida 15 foiz keshbek',

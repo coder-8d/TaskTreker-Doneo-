@@ -216,6 +216,10 @@ export default {
     demoMode: 'demo mode, no payment',
     cancel: 'Cancel subscription',
     cancelled: 'Subscription cancelled',
+    cancelScheduled: 'The subscription ends on {date} — everything keeps working until then.',
+    noSubscriptionHint: 'There is no active subscription to cancel.',
+    noSubscriptionTitle: 'No subscription',
+    serverUnreachable: 'The server is unreachable — start the API and try again.',
     activateError: 'Could not activate the plan.',
     cancelError: 'Could not cancel the subscription.',
     loadError: 'Could not load the plans.',
@@ -278,6 +282,7 @@ export default {
     questionLabel: 'Question or task',
     questionPlaceholder: 'For example: how to finish three tasks before the end of the day?',
     ask: 'Get advice',
+    sendRequest: 'Send request',
     thinking: 'Thinking…',
     samples: {
       one: 'How do I plan my day?',
@@ -308,6 +313,9 @@ export default {
     watch: 'Watch',
     close: 'Close',
     endingIn: 'Time left before you can close:',
+    canClose: 'Ad is required — now you can close it',
+    showNow: 'Show the ad now',
+    noAdsHint: 'Ads are turned off on your plan.',
     creatives: {
       alfaTitle: 'Open a business account',
       alfaText: '15% cashback on taxi rides',
