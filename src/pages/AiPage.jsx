@@ -170,6 +170,14 @@ GEMINI_API_KEY=AIza...       # Gemini
           {result.offline && (
             <>
               <p className="panel__text">{t('ai.offlineText')}</p>
+              {result.reason && result.reason !== 'not_configured' && (
+                <p className="sms__status sms__status--error">
+                  {t('ai.providerError', {
+                    reason: result.reason,
+                    detail: result.detail || '—',
+                  })}
+                </p>
+              )}
               <ul className="ai__tips">
                 {(result.tips || []).map((tip) => (
                   <li key={tip}>{tip}</li>

@@ -289,6 +289,7 @@ export default {
     answerTitle: 'Maslahat',
     offlineTitle: 'Oflayn maslahatlar',
     offlineText: 'Provayder bilan aloqa yo‘q yoki API kaliti yo‘q — internet sizmasini ko‘rsatamiz.',
+    providerError: 'Provayder xato qaytardi ({reason}, {detail}). .env dagi API kalitini tekshirib, serverni qayta ishga tushiring.',
     offlineBanner: 'Internet yo‘q — AI oflayn maslahat beradi.',
     retry: 'Yana so‘rash',
   },

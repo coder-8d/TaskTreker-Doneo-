@@ -289,6 +289,7 @@ export default {
     answerTitle: 'Advice',
     offlineTitle: 'Offline tips',
     offlineText: 'No connection to the provider or no API key — here are tips that work without internet.',
+    providerError: 'The provider returned an error ({reason}, {detail}). Check the API key in .env and restart the server.',
     offlineBanner: 'You are offline — the AI will answer with offline tips.',
     retry: 'Ask again',
   },
