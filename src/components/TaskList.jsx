@@ -51,6 +51,14 @@ export default function TaskList({
   }
 
   if (tasks.length === 0) {
+    // Быстрый переход к форме добавления, когда список пуст.
+    const focusAddForm = () => {
+      const input = document.querySelector('.task-form--compact .field__input')
+      if (!input) return
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      input.focus({ preventScroll: true })
+    }
+
     return (
       <div className="empty">
         <span className="empty__icon" aria-hidden="true">🗒</span>
@@ -60,6 +68,17 @@ export default function TaskList({
         <p className="empty__text">
           {filtered ? t('list.emptyFilteredText') : t('list.emptyText')}
         </p>
+        {!filtered && (
+          <button
+            className="empty__add"
+            type="button"
+            onClick={focusAddForm}
+            title={t('form.add')}
+            aria-label={t('form.add')}
+          >
+            +
+          </button>
+        )}
       </div>
     )
   }

@@ -143,6 +143,7 @@ export default function TaskForm({ initial, onSubmit, onCancel, submitLabel, com
           </button>
         )}
         <button className="btn btn--primary" type="submit">
+          {!initial && <span className="btn__plus" aria-hidden="true">+</span>}
           {submitLabel || (initial ? t('form.save') : t('form.add'))}
         </button>
       </div>
