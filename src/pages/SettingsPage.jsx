@@ -3,7 +3,6 @@ import ExportButtons from '../components/ExportButtons.jsx'
 import SmsPanel from '../components/SmsPanel.jsx'
 import { useI18n } from '../i18n/index.jsx'
 import { useTheme } from '../hooks/useTheme.js'
-import { useSubscription } from '../context/SubscriptionContext.jsx'
 import { downloadCSV } from '../lib/csv.js'
 import { downloadJSON } from '../lib/json.js'
 
@@ -17,7 +16,6 @@ const THEME_MODES = [
 export default function SettingsPage({ user, mode, tasks, stats, clearCompleted, logout }) {
   const { t, lang, setLang, langs, locale } = useI18n()
   const { theme, mode: themeMode, setMode: setThemeMode } = useTheme()
-  const { subscription, tier } = useSubscription()
 
   const isServer = mode === 'server'
 
@@ -40,40 +38,6 @@ export default function SettingsPage({ user, mode, tasks, stats, clearCompleted,
         title={t('pages.settings.title')}
         subtitle={t('pages.settings.subtitle')}
       />
-
-      <section className="panel">
-        <h3 className="panel__title">{t('plans.myPlan')}</h3>
-        <div className="setting">
-          <div className="setting__text">
-            <span className="setting__label">
-              {tier === 'free'
-                ? t('plans.freeName')
-                : `Doneo ${t(`plans.tiers.${tier}`)}`}
-              {subscription.status === 'trial' && (
-                <span className="plans__pill plans__pill--trial">
-                  {t('plans.statusTrial')}
-                </span>
-              )}
-            </span>
-            {tier !== 'free' && (
-              <span className="setting__hint">
-                {subscription.status === 'trial'
-                  ? t('plans.trialLeft', {
-                      days: Math.max(0, Math.ceil((subscription.trialEndsAt - Date.now()) / 86400000)),
-                    })
-                  : t('plans.renewsAt', {
-                      date: new Date(subscription.renewsAt || subscription.endsAt).toLocaleDateString(locale),
-                    })}
-              </span>
-            )}
-          </div>
-          <div className="setting__actions">
-            <a className="btn btn--primary btn--sm" href="#/pricing">
-              {tier === 'free' ? t('plans.choosePlan') : t('plans.changePlan')}
-            </a>
-          </div>
-        </div>
-      </section>
 
       <section className="panel">
         <h3 className="panel__title">{t('pages.settings.appearance')}</h3>

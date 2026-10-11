@@ -55,7 +55,7 @@ export function loadEnv(file = ENV_FILE) {
 
 // Секреты в .env не должны попадать в логи.
 export function describeEnv() {
-  return ['OPENAI_API_KEY', 'XAI_API_KEY', 'GEMINI_API_KEY', 'SMS_PROVIDER']
+  return ['SMS_PROVIDER']
     .map((key) => `${key}: ${process.env[key] ? 'задан' : 'нет'}`)
     .join(' · ')
 }

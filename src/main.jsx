@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
-import { SubscriptionProvider } from './context/SubscriptionContext.jsx'
 import { I18nProvider } from './i18n/index.jsx'
 import { RouterProvider } from './router/index.jsx'
 import { migrateLegacyKeys } from './lib/storage.js'
@@ -15,11 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <I18nProvider>
       <AuthProvider>
-        <SubscriptionProvider>
-          <RouterProvider>
-            <App />
-          </RouterProvider>
-        </SubscriptionProvider>
+        <RouterProvider>
+          <App />
+        </RouterProvider>
       </AuthProvider>
     </I18nProvider>
   </React.StrictMode>,

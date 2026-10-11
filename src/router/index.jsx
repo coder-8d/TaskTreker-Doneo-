@@ -9,7 +9,8 @@ import {
 
 // Мини-роутер на хэш-маршрутах: не требует серверных rewrite-правил,
 // работает из статического билда и сохраняет историю браузера.
-export const ROUTES = ['tasks', 'stats', 'pricing', 'ai', 'settings', 'help']
+// «more» — меню «Ещё»: ведёт на Настройки и Справку (они скрыты из основной навигации).
+export const ROUTES = ['tasks', 'stats', 'more', 'settings', 'help']
 export const DEFAULT_ROUTE = 'tasks'
 
 const RouterContext = createContext(null)

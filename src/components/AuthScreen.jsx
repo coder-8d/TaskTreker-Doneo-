@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useI18n } from '../i18n/index.jsx'
 import LanguageSwitcher from './LanguageSwitcher.jsx'
+import Modal from './Modal.jsx'
 
 const TABS = { LOGIN: 'login', REGISTER: 'register' }
 
@@ -17,6 +18,7 @@ export default function AuthScreen() {
   const [confirm, setConfirm] = useState('')
   const [remember, setRemember] = useState(true)
   const [localError, setLocalError] = useState('')
+  const [guestWarning, setGuestWarning] = useState(false)
 
   const switchTab = (next) => {
     setTab(next)
@@ -40,6 +42,8 @@ export default function AuthScreen() {
   }
 
   const shownError = localError || error
+  // Структурированные тексты предупреждения о входе в гостевой режим (см. i18n).
+  const warning = t('auth.guestWarning')
 
   return (
     <div className="auth">
@@ -162,10 +166,37 @@ export default function AuthScreen() {
         <button
           className="btn btn--ghost btn--block"
           type="button"
-          onClick={loginAsGuest}
+          onClick={() => setGuestWarning(true)}
         >
           {t('auth.guest')}
         </button>
+
+        {guestWarning && (
+          <Modal title={warning.title} onClose={() => setGuestWarning(false)}>
+            <div className="guest-warn">
+              <p>{warning.hello}</p>
+              <p className="guest-warn__note">{warning.note}</p>
+              <ul className="guest-warn__list">
+                {warning.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <p>{warning.tip}</p>
+              <p className="guest-warn__ready">{warning.ready}</p>
+              <p className="guest-warn__confirm">{warning.confirm}</p>
+              <button
+                className="btn btn--primary btn--block"
+                type="button"
+                onClick={async () => {
+                  setGuestWarning(false)
+                  await loginAsGuest()
+                }}
+              >
+                {warning.button}
+              </button>
+            </div>
+          </Modal>
+        )}
 
         <p className="auth__hint">
           {t('auth.guestHint')}{' '}

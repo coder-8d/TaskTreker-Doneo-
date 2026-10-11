@@ -5,14 +5,14 @@ import { useRouter } from './router/index.jsx'
 import { useOnline } from './hooks/useOnline.js'
 import Header from './components/Header.jsx'
 import Splash from './components/Splash.jsx'
-import AuthScreen from './components/AuthScreen.jsx'
 import OfflineScreen from './components/OfflineScreen.jsx'
+import PreAuth from './components/PreAuth.jsx'
+import TabBar from './components/TabBar.jsx'
 import TasksPage from './pages/TasksPage.jsx'
 import StatsPage from './pages/StatsPage.jsx'
 import SettingsPage from './pages/SettingsPage.jsx'
-import PricingPage from './pages/PricingPage.jsx'
-import AiPage from './pages/AiPage.jsx'
 import HelpPage from './pages/HelpPage.jsx'
+import MorePage from './pages/MorePage.jsx'
 
 // Оболочка приложения: шапка с навигацией, активная страница и подвал.
 // Состояние задач общее для всех страниц, поэтому хук вызывается один раз.
@@ -52,9 +52,7 @@ function Tracker() {
 
           {route === 'stats' && <StatsPage tasks={tasks} stats={stats} />}
 
-          {route === 'pricing' && <PricingPage />}
-
-          {route === 'ai' && <AiPage />}
+          {route === 'more' && <MorePage />}
 
           {route === 'settings' && (
             <SettingsPage
@@ -99,6 +97,8 @@ function Tracker() {
           </span>
         </footer>
 
+        <TabBar />
+
         <OfflineScreen online={online} />
       </div>
     </div>
@@ -109,6 +109,6 @@ export default function App() {
   const { ready, user } = useAuth()
 
   if (!ready) return <Splash />
-  if (!user) return <AuthScreen />
+  if (!user) return <PreAuth />
   return <Tracker key={user.id} />
 }

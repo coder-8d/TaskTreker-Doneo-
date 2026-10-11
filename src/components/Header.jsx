@@ -1,21 +1,17 @@
 import { useAuth } from '../context/AuthContext.jsx'
-import { useSubscription } from '../context/SubscriptionContext.jsx'
 import { useTheme } from '../hooks/useTheme.js'
 import { useI18n } from '../i18n/index.jsx'
-import { NavLink } from '../router/index.jsx'
+import { Link, useRouter } from '../router/index.jsx'
 import LanguageSwitcher from './LanguageSwitcher.jsx'
 
 // Пункты навигации между страницами Doneo.
+// Настройки и Справка живут в разделе «Ещё» — шапка не перегружена,
+// а на телефоне те же пункты уходят в нижнюю таб-панель (см. TabBar).
 const NAV_ITEMS = [
-  { to: 'tasks', icon: '✓', labelKey: 'nav.tasks' },
-  { to: 'stats', icon: '▦', labelKey: 'nav.stats' },
-  { to: 'pricing', icon: '💎', labelKey: 'nav.pricing' },
-  { to: 'ai', icon: '✨', labelKey: 'nav.ai' },
-  { to: 'settings', icon: '⚙', labelKey: 'nav.settings' },
-  { to: 'help', icon: '?', labelKey: 'nav.help' },
+  { to: 'tasks', icon: '✓', labelKey: 'nav.tasks', routes: ['tasks'] },
+  { to: 'stats', icon: '▦', labelKey: 'nav.stats', routes: ['stats'] },
+  { to: 'more', icon: '⋯', labelKey: 'nav.more', routes: ['more', 'settings', 'help'] },
 ]
-
-const TIER_ICONS = { plus: '💎', pro: '🚀', ultima: '👑' }
 
 function initials(name) {
   const parts = String(name || '').trim().split(/\s+/).filter(Boolean)
@@ -28,7 +24,7 @@ export default function Header({ taskCount = 0 }) {
   const { user, mode, logout } = useAuth()
   const { theme, mode: themeMode, toggleTheme } = useTheme()
   const { t } = useI18n()
-  const { tier, subscription } = useSubscription()
+  const { route } = useRouter()
 
   const isServer = mode === 'server'
   // Кнопка темы циклит Light → Dark → Auto.
@@ -54,12 +50,21 @@ export default function Header({ taskCount = 0 }) {
       </div>
 
       <nav className="nav" aria-label={t('meta.name')}>
-        {NAV_ITEMS.map((item) => (
-          <NavLink key={item.to} to={item.to} className="nav__link">
-            <span className="nav__icon" aria-hidden="true">{item.icon}</span>
-            <span className="nav__label">{t(item.labelKey)}</span>
-          </NavLink>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          // Пункт «Ещё» активен и на Настройках, и на Справке.
+          const active = item.routes.includes(route)
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`nav__link ${active ? 'is-active' : ''}`}
+              aria-current={active ? 'page' : undefined}
+            >
+              <span className="nav__icon" aria-hidden="true">{item.icon}</span>
+              <span className="nav__label">{t(item.labelKey)}</span>
+            </Link>
+          )
+        })}
       </nav>
 
       <div className="header__actions">
@@ -72,18 +77,6 @@ export default function Header({ taskCount = 0 }) {
         </span>
 
         <LanguageSwitcher />
-
-        {tier !== 'free' && (
-          <a
-            className={`plan-pill plan-pill--${tier}`}
-            href="#/pricing"
-            title={t('plans.myPlan')}
-          >
-            <span aria-hidden="true">{TIER_ICONS[tier]}</span>
-            {t(`plans.tiers.${tier}`)}
-            {subscription.status === 'trial' && <span className="plan-pill__flag">🎁</span>}
-          </a>
-        )}
 
         <button
           className="icon-btn"
